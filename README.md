@@ -35,18 +35,48 @@ Furthermore, in order to extract as much information as possible from the other 
 
 In total, 142 manually generated features and 880 automatically generated features are created from the other datasets, in addition to the 120 features already available in the application dataset (excluding ID and target columns).
 
-Float numbers are converted to float32 to reduce memory usage and categorical variables are converted to binary one-hot variables. The application dataset with all its new features is then split back between the training and testing datasets. 
+Float numbers are converted to float32 to reduce memory usage and categorical variables are converted to [binary one-hot variables](https://machinelearningmastery.com/why-one-hot-encode-data-in-machine-learning/). The application dataset with all its new features is then split back between the training and testing datasets. 
 
 ## Machine Learning Models and Main Results
 
-For this type of supervized learning tasks, Gradient Boosting models (such as XGBoost and LightGBM) are known to outperform other types of models, including random forest and neural network problems. In the [machine learning notebook](https://github.com/Bougeant/Home_Credit_default_risk/blob/master/9%20-%20Machine%20learning%20model.ipynb), the [LightGBM (Light Gradient Boosting Machine)](https://lightgbm.readthedocs.io/en/latest/) algorithm is selected because it was found to be much faster than XGBoost for this task. Missing values are kept as such because LightGBM handles N/A values well.
+### Gradient boosting model
 
-This Gradient Boosting model was optimized using a self-made [Grid Search Cross-Validated algorithm](https://en.wikipedia.org/wiki/Hyperparameter_optimization#Grid_search), which takes into account early stopping (which is not possible with Scikit-Learn GridSearchCV function). After optimization this model obtains a cross-validated ROC AUC score of 0.795 for the training data, and 0.796/0.794 on the Kaggle public/private test data, with the private test data being only revealed at the end of the competition (August 29, 2018).
+For this type of supervized learning tasks, [Gradient Boosting](https://en.wikipedia.org/wiki/Gradient_boosting) models (such as XGBoost and LightGBM) are known to outperform other types of models, including random forest and neural network problems. In the [machine learning notebook](https://github.com/Bougeant/Home_Credit_default_risk/blob/master/9%20-%20Machine%20learning%20model.ipynb), the [LightGBM (Light Gradient Boosting Machine)](https://lightgbm.readthedocs.io/en/latest/) algorithm is selected because it was found to be much faster than XGBoost for this task. Missing values are kept as such because LightGBM handles N/A values well.
 
-The graph below shows the ROC curve and the corresponding Area Under the Curve score for this optimized Gradient Boosting model, for both the training data and the validation data (using cross-validation on the training data). This graph shows that this model overfits a little bit because the ROC AUC is significantly better for the training data (0.831) than for the validation data(0.795), but we can trust that this is a good model because it lead to the best ROC AUC for the validation data and was confirmed by the very simlary score on the Kaggle public test data (0.796).
+This Gradient Boosting model was optimized using a self-made [Grid Search Cross-Validated algorithm](https://en.wikipedia.org/wiki/Hyperparameter_optimization#Grid_search), which takes into account early stopping (which is not possible with [Scikit-Learn's GridSearchCV function](http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html)). It is made of decision trees with a maximum depth of 5, with each tree being built using 60% of features (to introduce diversity between the trees, as with a random forest model), and with boh [L1 and L2 regularization](https://towardsdatascience.com/l1-and-l2-regularization-methods-ce25e7fc831c), so as to limit [overfitting](https://en.wikipedia.org/wiki/Overfitting). 
+
+After optimization this model obtains a cross-validated ROC AUC score of 0.795 for the training data, and 0.796/0.794 on the Kaggle public/private test data, with the private test data being only revealed at the end of the competition (August 29, 2018).
+
+The graph below shows the ROC curve and the corresponding Area Under the Curve score for this optimized Gradient Boosting model, for both the training data and the validation data (using cross-validation on the training data). This graph shows that this model overfits a little bit because the ROC AUC is significantly better for the training data (0.831) than for the validation data (0.795), but we can trust that this is a good model because it lead to the best ROC AUC for the validation data and this was confirmed by the very similary score on the Kaggle public test data (0.796).
 
 <p align="center"><img src="./images/LGB_ROC_AUC.png"></p>
 
+The most important features for this Gradient Boosting model are shown below, with a higher importance corresponding to a more frequent selection of the feature for the generation of the base tree models of which the Gradient Boosting model is made of. In other words, the most important features are those that bring the most information regarding the risk of credit default for customers in the dataset.
+
+<p align="center"><img src="./images/LGB_features_importance.png"></p>
+
+The predicted default probability distributions generated by this Gradient Boosting model are shown in the plot below, with a clear distinction between the probabilities for the customers that do and do not default on their credit. The vast majority of predicted probability values for the customers who do not default are very low (<5%), while a large fraction of the predicted probability values for the customers who end up defaulting on their credit are above 20%.
+
+<p align="center"><img src="./images/Predictions_distribution_LGB.png"></p>
+
+In particular, by retaining only the customers with a default probability lower than 10%, the expected default rate is reduced by over 50%, while retaining over 75% of applying customers.
+
+### Neural network model
+
+In order to improve on the prediction by the Gradient Boosting model, a [Neural Network](https://en.wikipedia.org/wiki/Artificial_neural_network) model is also used for predicting default risk, so as to build a simple [stacked model](http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/) with these two base models. For perfromance purposes, the neural network is build using the [Keras library](https://keras.io/), and was manually optimized using an iterative process. This optimized neural network model consists in one hidden layer of 50 neurons with a sigmoid activation function, in addition to the input and output layers. In order to prevent overfitting, a [dropout](https://en.wikipedia.org/wiki/Dropout_(neural_networks)) rate of 20% is used on the hidden layer, in combination with L2 regularization for the hidden layer weights. The number of training epochs for the neural network is selected so that the cross-validated ROC AUC score is maximized to prevent overfitting on the training data.
+
+This neural network model results in a much lower cross-validated ROC AUC score (0.781) than the gradient boosting model (0.795). It obtained ROC AUC scores of  0.783 and 0.775 on the Kaggle public and private test data, respectively (instead of 0.796/0.794 for the gradient boosting model). In theory, a neural network should be capable of reproducing the performance of the gradient boosting model, but it was difficult and time consuming to optimize its performance for this project, due to the size of the training data.
+
+The purpose of working on this neural network model was to generate a distinct set of credit default probabilities in order to combine them with the gradient boosting model in a stacked model. Stacked models generally perform better when base models have low correlations and similar performance. For this reason, a neural network model was prefered to more performing base tree models (such as random forest) because the high correlation coefficient with the tree-based gradient boosting model would not lead to a significant improvement in the predictions.
+
+The plot below shows the cross-validated predicted probabilities by the gradient boosting and neural network models for customers in the training date who did and did not default on their credits. While the predictions are obviously correlated, they can differ significantly for any given customer. 
+
+<p align="center"><img src="./images/Default_probability_LGB_vs_NN.png"></p>
+
+
+### Stacked model
+
+Once the cross-validated predictions by the gradient boosting and neural models are generated, a weighted average (with manually optimized weights) of the credit default probabilities predicted by both base models is used to create a stacked model. This simple weighted average model was found to perform better than a logistic regression model using cross-validation on the training data. The
 
 ## How to use
 
