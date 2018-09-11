@@ -1,6 +1,6 @@
 # Home Credit Default Risk
 
-This project contains the Jupyter notebooks used for the [Home Credit Default Risk Kaggle competition](https://www.kaggle.com/c/home-credit-default-risk), in which the objective was to predict the probability of credit default for [Home Credit](http://www.homecredit.net/) customers in the database. Using a combination between a Gradient Boosting model and a Neural Network model, the final model ended up in the [top  9% in the Kaggle competition](https://www.kaggle.com/olivierbo/competitions), with a ROC AUC score of 0.795 on the private (hidden) test data.
+This project contains the Jupyter notebooks used for the [Home Credit Default Risk Kaggle competition](https://www.kaggle.com/c/home-credit-default-risk), in which the objective was to predict the probability of credit default for [Home Credit](http://www.homecredit.net/) customers in the database. Using a combination between a Gradient Boosting model and a Neural Network model, the final model ended up in the [top  9% in the Kaggle competition](https://www.kaggle.com/olivierbo/competitions), with a ROC AUC score of 0.795 on the hidden private test data (and a Cross-Validated ROC AUC score of 0.796 for the training data).
 
 ## Introduction
 
@@ -51,9 +51,9 @@ This Gradient Boosting model was optimized using a self-made [Grid Search Cross-
 
 After optimization this model obtains a cross-validated ROC AUC score of 0.795 for the training data, and 0.796/0.794 on the Kaggle public/private test data, with the private test data being only revealed at the end of the competition (August 29, 2018).
 
-The graph below shows the ROC curve and the corresponding Area Under the Curve score for this optimized Gradient Boosting model, for both the training data and the validation data (using cross-validation on the training data). This graph shows that this model overfits a little bit because the ROC AUC is significantly better for the training data (0.831) than for the validation data (0.795), but we can trust that this is a good model because it lead to the best ROC AUC for the validation data and this was confirmed by the very similar score on the Kaggle public test data (0.796).
+The graph below shows the ROC curves and the corresponding Area Under the Curve scores for this optimized Gradient Boosting model, for both the training data and the validation data (for each cross-validation fold). This graph shows that this model overfits a little bit because the ROC AUC is significantly better for the training data (0.831) than for the validation data (0.795), but we can trust that this is a good model because it lead to the best ROC AUC for the validation data and this was confirmed by the very similar score on the Kaggle public test data (0.796).
 
-<p align="center"><img src="./images/LGB_ROC_AUC.png"></p>
+<p align="center"><img src="./images/LGB_CV_ROC_AUC.png"></p>
 
 The most important features for this Gradient Boosting model are shown below, with a higher importance corresponding to a more frequent selection of the feature for the generation of the base tree models of which the Gradient Boosting model is made of. In other words, the most important features are those that bring the most information regarding the risk of credit default for customers in the dataset. This plot shows that the generation of manual features (e.g. credit to annuity ratio, average credit score, personal contribution, etc.) in the feature engineering phase of this project was critical for the performance of the model.
 
