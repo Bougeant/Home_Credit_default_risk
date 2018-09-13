@@ -53,7 +53,7 @@ This Gradient Boosting model was optimized using a self-made [Grid Search Cross-
 
 After optimization this model obtains a cross-validated ROC AUC score of 0.795 for the training data, and 0.796/0.794 on the Kaggle public/private test data, with the private test data being only revealed at the end of the competition (August 29, 2018).
 
-The graph below shows the ROC curves and the corresponding Area Under the Curve scores for this optimized Gradient Boosting model, for both the training data and the validation data (for each cross-validation fold). This graph shows that this model overfits a little bit because the ROC AUC is significantly better for the training data (0.831) than for the validation data (0.795), but we can trust that this is a good model because it lead to the best ROC AUC for the validation data and this was confirmed by the very similar score on the Kaggle public test data (0.796).
+The graph below shows the ROC curves and the corresponding Area Under the Curve scores for this optimized Gradient Boosting model, for both the training data and the validation data (for each cross-validation fold). This graph shows that this model overfits a little bit because the ROC AUC is significantly better for the training data (0.865) than for the validation data (0.795), but we can trust that this is a good model because it lead to the best ROC AUC for the validation data and this was confirmed by the very similar score on the Kaggle public test data (0.796).
 
 <p align="center"><img src="./images/LGB_CV_ROC_AUC.png" width = "700"></p>
 
