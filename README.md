@@ -16,14 +16,14 @@ The available data consists in the following datasets:
 * previous_application: this dataset contains the information regarding the previous credit applications at Home Credit by the customer,
 * POS_CASH_balance, credit_card_balance, installment_payments: these datasets contain the information regarding payments for Home Credit loans and credit card by the customer.
 
-For example, the figure below shows the average default rate by education level (on the left side), as well as the distribution of customers by education level (on the right side).
+For example, the figure below shows the average default rate by education level (left), as well as the distribution of customers by education level (right).
 
 <p align="center"><img src="./images/Education_feature.png"></p>
 
 The features in the main application dataset are used to create new features that may be more relevant to credit default risk than the existing features in this [notebook](https://github.com/Bougeant/Home_Credit_default_risk/blob/master/1%20-%20Application%20features.ipynb)), including:
 * the ratio between the credit total and the annuity (indicative of total credit duration),
 * debt to income ratio (indicative of the capacity to repay the loan),
-* the average credit institution score (between the three sources of credit score),
+* the average credit institution score (average of the three sources of credit score),
 * the estimated age at the end of the credit (from age and credit length),
 * the personal contribution (defined as the difference between the purchased goods and the credit).
 
@@ -69,7 +69,7 @@ In particular, by retaining only the customers with a default probability lower 
 
 ### Neural network model
 
-In order to improve on the prediction by the Gradient Boosting model, a [Neural Network](https://en.wikipedia.org/wiki/Artificial_neural_network) model is also used for predicting default risk, so as to build a simple [stacked model](http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/) with these two base models. For performance purposes, the neural network is build using the [Keras library](https://keras.io/), and was manually optimized using an iterative process. This optimized neural network model consists in one hidden layer of 50 neurons with a sigmoid activation function, in addition to the input and output layers. In order to prevent overfitting, a [dropout](https://en.wikipedia.org/wiki/Dropout_(neural_networks)) rate of 20% is used on the hidden layer, in combination with L2 regularization for the hidden layer weights. The number of training epochs for the neural network is selected so that the cross-validated ROC AUC score is maximized to prevent overfitting on the training data.
+In order to improve the prediction by the Gradient Boosting model, a [Neural Network](https://en.wikipedia.org/wiki/Artificial_neural_network) model is also used for predicting default risk, so as to build a simple [stacked model](http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/) with these two base models. For performance purposes, the neural network is build using the [Keras library](https://keras.io/), and was manually optimized using an iterative process. This optimized neural network model consists in one hidden layer of 50 neurons with a sigmoid activation function, in addition to the input and output layers. In order to prevent overfitting, a [dropout](https://en.wikipedia.org/wiki/Dropout_(neural_networks)) rate of 20% is used on the hidden layer, in combination with L2 regularization for the hidden layer weights. The number of training epochs for the neural network is selected so that the cross-validated ROC AUC score is maximized to prevent overfitting on the training data.
 
 This neural network model results in a much lower cross-validated ROC AUC score (0.780) than the gradient boosting model (0.795). It obtained ROC AUC scores of 0.783 and 0.775 on the Kaggle public and private test data, respectively (instead of 0.796/0.794 for the gradient boosting model). In theory, a neural network should be capable of reproducing the performance of the gradient boosting model, but it was difficult and time consuming to optimize its performance for this project, due to the size of the training data. As shown in the graph below, this model does not overfit the training data significantly (ROC AUC score of 0.808 on the training data), in large part thanks to the dropout of neurons in the hidden layer. 
 
