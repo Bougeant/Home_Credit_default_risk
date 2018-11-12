@@ -6,7 +6,7 @@ This project contains the Jupyter notebooks used for the [Home Credit Default Ri
 
 ## Introduction
 
-The purpose of this Kaggle competition was to predict the probability of credit default for Home Credit customers using the available data (including new credit application data, past credit history obtained from a credit institution, past applications with Home Credit and past payments for previous credits with Home Credit). The metric used for the final score in this competition is the Area Under the [Receiver operating Characteristic Curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) (ROC AUC).
+The purpose of this Kaggle competition was to predict the probability of credit default for Home Credit customers using the available data (including new credit application data, past credit history obtained from a credit institution, past applications and past payments for previous credits with Home Credit. The metric used for the final score in this competition is the Area Under the [Receiver operating Characteristic Curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) (ROC AUC).
 
 ## Feature Engineering
 
